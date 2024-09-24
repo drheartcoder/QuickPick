@@ -1,0 +1,199 @@
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCccvQtzVx4aAt05YnfzJDSWEzPiVnNVsY"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marker-animate-unobtrusive/0.2.8/vendor/markerAnimate.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marker-animate-unobtrusive/0.2.8/SlidingMarker.min.js"></script>
+<script src="/public/jqueryeasing.js"></script>
+
+<hr/>
+
+<p>
+  <button onclick="startTrip();">Start Trip</button>
+</p>
+
+<p>
+  <button onclick="stopTrip();">Stop Trip</button>
+</p>
+
+<div id="dvMap" style="width: 800px; height: 600px">
+</div>
+
+<script>
+
+    var vehicle_track_port = 8800;
+    var vehicle_track_socket_connect = io();
+
+    vehicle_track_socket_connect.on('get_all_vehicle_info', function(response) {
+        if(response != undefined) {
+
+            if (response.lat != undefined && response.lng != undefined && response.vehicle_id != undefined) {
+
+                var marker_present = 'NO';
+                if (markers.length > 0) {
+                    markers.forEach(function (currentValue, index) {
+                        if (currentValue != undefined) {
+                            if (currentValue['vehicle_id'] != undefined) {
+                                if (currentValue['vehicle_id'] == response.vehicle_id) {
+                                    markers.splice(index, 1);
+                                    marker_present = 'YES';
+                                }
+                            }
+                        }
+                    });
+                }
+
+                response['marker_present'] = marker_present;
+                markers.push(response);
+
+                // Check if the marker is exist on the map.
+                var create_new_map = "YES";
+                markers.forEach(function (currentValue, index) {
+                    if (currentValue != undefined) {
+                        if (currentValue['vehicle_id'] != undefined) {
+                            if ((currentValue['vehicle_id'] == response.vehicle_id) && (currentValue['marker_present'] == 'YES') ) {
+                                create_new_map = "NO";
+                                map_markers.forEach(function (currentValue, index) {
+                                    if (currentValue != undefined) {
+                                        if (currentValue['vehicle_id'] != undefined) {
+                                            if (currentValue['vehicle_id'] == response.vehicle_id) {
+                                                /* console.log(currentValue); */
+                                                var myLatlng = new google.maps.LatLng(response.lat,response.lng);
+                                                currentValue.setDuration('1000');
+                                                currentValue.setEasing('easeInOutQuint');
+                                                currentValue.setPosition(myLatlng);
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+
+                if(create_new_map == "YES") {
+                    SetMarker(response);
+                }
+                
+                // var bounds = new google.maps.LatLngBounds();
+                // for (var i = 0; i < map_markers.length; i++) {
+                //     bounds.extend(map_markers[i].getPosition());
+                // }
+                // map.fitBounds(bounds);
+                // map.setZoom(13);
+            }
+        }
+    });
+
+    
+
+    var markers     = [];
+    var map_markers = [];
+
+    function SetMarker(data) {
+        var marker;
+        //Remove previous Marker.
+        /*if (marker != null) {
+            marker.setMap(null);
+        }*/
+
+        // Create and open InfoWindow.
+        // var contentString = "<div style = 'width:200px;min-height:40px'>" + data.location_description + "</div>";
+
+        var myLatlng = new google.maps.LatLng(data.lat, data.lng);
+
+        marker = new SlidingMarker({
+                                      position: myLatlng,
+                                      map: map,
+                                      icon: '/public/images/car-icon.png',
+                                      vehicle_id: data.vehicle_id
+                                  });
+
+        /*marker.setValues({vehicle_id: data.vehicle_id});
+        var val = marker.get("id");*/
+        map_markers.push(marker);
+        // map.panTo(myLatlng);
+    };
+
+    // Sending the lat lng dynamically.
+    function callPosition1() {
+        lat += 0.002;
+        lng += 0.002;
+
+        ride_id  = 1;
+
+        var location_description = 'Nashik, lat-> ' + lat + ' , lng -> '+ lng;
+        var obj_location = { 'vehicle_id': vehicle_id, 'lat': lat ,'lng' : lng ,'location_description' : location_description ,'ride_id' : ride_id, service_id : 4, driver_status:'AVAILABLE', driver_name : 'Pooja K'};
+        vehicle_track_socket_connect.emit('show_on_map',obj_location);
+    }
+
+    function callPosition2() {
+
+        mlat += 0.006;
+        mlng += 0.006;
+
+        mride_id = 2;
+
+        var mlocation_description = 'Mumbai, India. lat-> ' + mlat + ' , lng -> '+ mlng;
+        var mobj_location = { 'vehicle_id': mvehicle_id, 'lat': mlat ,'lng' : mlng ,'location_description' : mlocation_description , 'ride_id': mride_id, service_id : 4, driver_status:'AVAILABLE', driver_name: 'Gaurav'  };
+        vehicle_track_socket_connect.emit('show_on_map',mobj_location);     
+
+        // clearInterval(timeout2);     
+    }
+
+    // var markers = [{
+    //     //"title": 'Nashik',
+    //     "lat": '0',
+    //     "lng": '0',
+    //     //"description": 'Nashik, India.'
+    // }];
+
+    var source_lat = 19.9999;
+    var source_lng = 73.8999;
+    
+    window.onload = function () {
+        LoadMap();
+        console.log('On Page socket id => ',vehicle_track_socket_connect.id);
+        vehicle_track_socket_connect.emit('track_all_vehicles',{id : vehicle_track_socket_connect.id,service_id:4, source_lat: source_lat, source_lng: source_lng });
+    };
+
+    var map;
+
+    function LoadMap() {
+        var mapOptions = {
+            center: new google.maps.LatLng(19.9999, 73.8999),
+            zoom: 10,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        map = new google.maps.Map(document.getElementById("dvMap"), mapOptions);
+        // SetMarker(markers);
+    };
+
+    var lat  = 19.9975;
+    var lng  = 73.7898;
+
+    var mlat = 19.9975;
+    var mlng = 73.7889;
+
+    var vehicle_id  = 3;
+    var mvehicle_id = 4;
+    
+    var timeout1;
+    var timeout2;
+
+    function startTrip() {
+        timeout1 = setInterval(function () {
+            callPosition1();
+        },1000);
+
+        timeout2 = setInterval(function () {
+            callPosition2();
+        },1500);
+    }
+
+    function stopTrip() {
+        clearInterval(timeout1);
+        clearInterval(timeout2);
+        // vehicle_track_socket_connect.emit('stop_vehicle_tracking', { vehicle_id: 4 });
+    }
+</script>

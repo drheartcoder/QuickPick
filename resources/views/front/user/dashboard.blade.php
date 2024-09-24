@@ -1,0 +1,149 @@
+ @extends('front.layout.master')                
+
+    @section('main_content')
+
+    <div class="blank-div"></div>
+   <div class="email-block">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6 col-md-6 col-lg-6">
+                    <div class="headding-text-bredcr">
+                       Dashboard
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-6">
+                    <div class="bredcrum-right">
+                        <a href="{{ $module_url_path }}" class="bredcrum-home"> Dashboard </a>
+                       {{--  <span class="arrow-righ"><i class="fa fa-angle-right"></i></span>
+                        Dashboard --}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+   <!--dashboard page start-->
+
+   <!--dashboard page start-->
+   <div class="main-wrapper">
+       <div class="container-fluid">
+           <div class="row">
+               @include('front.user.left_bar')
+               <div class="middle-bar">
+               @include('front.layout._operation_status')
+                   <div class="dash-right-block">
+                       <div class="top-title">
+                           <h2>Hi {{ $user_name }}, Welcome to {{ isset($arr_site_settings['site_name']) ? $arr_site_settings['site_name'] : ''}}!</h2>
+                           {{-- <p>All your Training/Courses purchased with us will appear here and you'll be able to manage everything!</p> --}}
+                       </div>
+                       <div class="row">
+                           <div class="col-sm-6 col-md-6 col-lg-6" onclick="location.href = '{{url('/user/my_booking?trip_type=ONGOING')}}';">
+                              <div class="dash-menu-block-wrapper">
+                                   <div class="dash-menu-block blue">
+                                       <div class="img-block">
+                                          <span> <img src="{{ url('/')}}/images/dash-menu-icon1.png" class="img-responsive" alt=""/></span>
+                                       </div>
+                                       <div class="dash-pro-data">
+                                           <h1>{{ get_trip('ONGOING','USER')}}</h1>
+                                           <h5>Ongoing Trips</h5>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                           <div class="col-sm-6 col-md-6 col-lg-6" onclick="location.href = '{{url('/user/my_booking?trip_type=PENDING')}}';">
+                              <div class="dash-menu-block-wrapper dark-green">
+                                   <div class="dash-menu-block">
+                                       <div class="img-block">
+                                          <span> <img src="{{ url('/')}}/images/dash-menu-icon2.png" class="img-responsive" alt=""/></span>
+                                       </div>
+                                       <div class="dash-pro-data">
+                                           <h1>{{ get_trip('PENDING','USER')}}</h1>
+                                           <h5>Pending Trips</h5>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                           <div class="col-sm-6 col-md-6 col-lg-6" onclick="location.href = '{{url('/user/my_booking?trip_type=COMPLETED')}}';">
+                              <div class="dash-menu-block-wrapper red">
+                                   <div class="dash-menu-block">
+                                       <div class="img-block">
+                                          <span> <img src="{{ url('/')}}/images/dash-menu-icon3.png" class="img-responsive" alt=""/></span>
+                                       </div>
+                                       <div class="dash-pro-data">
+                                           <h1>{{ get_trip('COMPLETED','USER')}}</h1>
+                                           <h5>Completed Trips</h5>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                           <div class="col-sm-6 col-md-6 col-lg-6" onclick="location.href = '{{url('/user/my_booking?trip_type=CANCELED')}}';">
+                              <div class="dash-menu-block-wrapper red">
+                                   <div class="dash-menu-block">
+                                       <div class="img-block">
+                                          <span> <img src="{{ url('/')}}/images/dash-menu-icon6.png" class="img-responsive" alt=""/></span>
+                                       </div>
+                                       <div class="dash-pro-data">
+                                           <h1>{{ get_trip('CANCELED','USER')}}</h1>
+                                           <h5>Cancelled Trips</h5>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                           <div class="col-sm-6 col-md-6 col-lg-6" onclick="location.href = '{{url('/user/review_rating')}}';">
+                              <div class="dash-menu-block-wrapper sky-blue">
+                                   <div class="dash-menu-block">
+                                       <div class="img-block">
+                                          <span> <img src="{{ url('/')}}/images/dash-menu-icon5.png" class="img-responsive" alt=""/></span>
+                                       </div>
+                                       <div class="dash-pro-data">
+
+                                           <h1>{{ get_review_ratings()}}</h1>
+                                           <h5>Review and Ratings</h5>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                           <div class="col-sm-6 col-md-6 col-lg-6" onclick="location.href = '{{url('/user/notification')}}';">
+                              <div class="dash-menu-block-wrapper green">
+                                   <div class="dash-menu-block">
+                                       <div class="img-block">
+                                          <span> <img src="{{ url('/')}}/images/dash-menu-icon4.png" class="img-responsive" alt=""/></span>
+                                       </div>
+                                       <div class="dash-pro-data">
+                                           <h1>{{ get_notification('USER')}}</h1>
+                                           <h5>Notifications</h5>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                       <div class="need-help hidden-xs hidden-sm inner-blue">
+                           <div class="row">
+                               <div class="col-sm-8 col-md-8 col-lg-9">
+                                   <h4>Need {{ isset($arr_site_settings['site_name']) ? $arr_site_settings['site_name'] : ''}} Help?</h4>
+                                   <p>We would be more than happy to help you. Our team advisor are 24/7 at your service to help you.</p>
+                               </div>
+                               <div class="col-sm-4 col-md-4 col-lg-3">
+                                   <a href="{{ url('/contact_us') }}" class="get-in-touch">Get In Touch</a>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+               @include('front.user.right_bar')
+           </div>
+           <div class="need-help hidden-md hidden-lg inner-blue">
+                <div class="row">
+                    <div class="col-sm-8 col-md-8 col-lg-9">
+                        <h4>Need {{ isset($arr_site_settings['site_name']) ? $arr_site_settings['site_name'] : ''}} Help?</h4>
+                        <p>We would be more than happy to help you. Our team advisor are 24/7 at your service to help you.</p>
+                    </div>
+                    <div class="col-sm-4 col-md-4 col-lg-3">
+                        <a href="{{ url('/contact_us') }}" class="get-in-touch">Get In Touch</a>
+                    </div>
+               </div>
+        </div>
+       </div>
+   </div>
+   <!--dashboard page end-->
+
+@stop

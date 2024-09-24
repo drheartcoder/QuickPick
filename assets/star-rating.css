@@ -1,0 +1,3 @@
+/*rating demo*/
+span.stars, span.stars span {display: block;background: url("../images/star.png") 0 -19px repeat-x; width: 101px;height: 20px; color: transparent;}
+span.stars span {background-position: 0 0;}

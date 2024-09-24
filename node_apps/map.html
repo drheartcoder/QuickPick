@@ -1,0 +1,157 @@
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCccvQtzVx4aAt05YnfzJDSWEzPiVnNVsY"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marker-animate-unobtrusive/0.2.8/vendor/markerAnimate.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marker-animate-unobtrusive/0.2.8/SlidingMarker.min.js"></script>
+<script src="/public/jqueryeasing.js"></script>
+
+<script>
+
+    var vehicle_track_port = 8800;
+    var vehicle_track_socket_connect = io();
+
+    vehicle_track_socket_connect.on('get_vehicle_info', function(response) {
+        if(response != undefined) {
+            if(response.lat != undefined && response.lat != undefined && response.lng != undefined && response.location_description != undefined) {
+                var myLatlng = new google.maps.LatLng(response.lat,response.lng);
+                marker.setDuration('1000');
+                marker.setEasing('easeInOutQuint');
+                marker.setPosition(myLatlng);
+                map.panTo(myLatlng);
+            }
+        }
+    });
+
+    // Sending the lat lng dynamically.
+    function callPosition() {
+        lat += 0.001;
+        lng += 0.001;
+
+        mlat += 0.001;
+        mlng += 0.001;
+
+        ride_id = 1;
+        mride_id = 2;
+
+        var location_description = 'Nashik, lat-> ' + lat + ' , lng -> '+ lng;
+        var obj_location = { 'vehicle_id': vehicle_id, 'lat': lat ,'lng' : lng ,'location_description' : location_description ,'ride_id' : ride_id };
+        vehicle_track_socket_connect.emit('show_on_map',obj_location);
+        
+        var mlocation_description = 'Mumbai, India. lat-> ' + mlat + ' , lng -> '+ mlng;
+        var mobj_location = { 'vehicle_id': mvehicle_id, 'lat': mlat ,'lng' : mlng ,'location_description' : mlocation_description , 'ride_id': mride_id };
+        vehicle_track_socket_connect.emit('show_on_map',mobj_location);          
+    }
+
+    var markers = [{
+        //"title": 'Nashik',
+        "lat": '0',
+        "lng": '0',
+        //"description": 'Nashik, India.'
+    }];
+
+    window.onload = function () {
+        LoadMap();
+        vehicle_track_socket_connect.emit('send_vehicle_info_to_track',{vehicle_id:4,id : vehicle_track_socket_connect.id});
+    };
+ 
+    var map;
+    var marker;
+    function LoadMap() {
+        var mapOptions = {
+            center: new google.maps.LatLng(markers[0].lat, markers[0].lng),
+            zoom: 13,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        map = new google.maps.Map(document.getElementById("dvMap"), mapOptions);
+        SetMarker(markers);
+    };
+    function SetMarker(markers) {
+        //Remove previous Marker.
+        if (marker != null) {
+            marker.setMap(null);
+        }
+
+        /* var infoWindow = new google.maps.InfoWindow();
+        infoWindow.setContent("<div style = 'width:200px;min-height:40px'>" + data.description + "</div>");*/
+
+        //Set Marker on Map.
+        var data = markers[0];
+
+        //Create and open InfoWindow.
+        var contentString = "<div style = 'width:200px;min-height:40px'>" + data.description + "</div>";
+
+        /*var infoWindow = new google.maps.InfoWindow({
+            content: contentString
+        });*/
+        
+        var myLatlng = new google.maps.LatLng(data.lat, data.lng);
+
+        marker = new SlidingMarker({
+                    position: myLatlng,
+                    map: map,
+                    icon: '/public/images/car-icon.png'
+                });
+
+        /*marker = new google.maps.Marker({
+            position: myLatlng,
+            map: map,
+            //title: data.title,
+            icon: '/public/images/car-icon.png'
+        });*/       
+        //infoWindow.open(map, marker);
+    };
+
+    function changeMarkerPosition() {
+       /*
+        var lat = 19.9975;
+        var lng = 73.7898;
+        setInterval(function () {
+            lat += 0.003;
+            lng += 0.003;
+            var markers = [{
+                "title": 'Nashik',
+                "lat": String(lat),
+                "lng": String(lng),
+                "description": 'Nashik, India. lat-> ' + lat + ' , lng -> '+ lng 
+            }];
+            SetMarker(markers);
+        },1000);
+        */
+    }
+
+    var lat = 19.9975;
+    var lng = 73.7898;
+
+    var mlat = 19.0760;
+    var mlng = 72.8777;
+
+    var vehicle_id  = 3;
+    var mvehicle_id = 4;
+    var timeout;
+
+    function startTrip() {
+        timeout = setInterval(function () {
+            callPosition();
+        },3000);
+    }
+    
+    function stopTrip() {
+        clearInterval(timeout);
+        vehicle_track_socket_connect.emit('stop_vehicle_tracking', { vehicle_id: 4 });
+    }
+
+</script>
+
+<hr/>
+
+<p>
+    <button onclick="startTrip();" >Start Trip</button>
+</p>
+
+<p>
+    <button onclick="stopTrip();" >Stop Trip</button>
+</p>
+
+<div id="dvMap" style="width: 800px; height: 600px">
+</div>

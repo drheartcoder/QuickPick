@@ -1,0 +1,20 @@
+ALTER TABLE `users` CHANGE `user_type` `user_type` ENUM('ADMIN','COMPANY','USER','DRIVER','ENTERPRISE_USER','ENTERPRISE_ADMIN') CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+
+
+ALTER TABLE `users` ADD `enterprise_license` VARCHAR(255) NOT NULL AFTER `is_driving_license_verified`;
+
+ALTER TABLE `users` ADD `is_company_user` ENUM('0','1') NOT NULL DEFAULT '0' COMMENT '//0->Admin 1//->1' AFTER `is_company_driver`;
+
+
+
+CREATE TABLE `promotional_offer` ( `id` int(11) NOT NULL, `banner_title` varchar(255) NOT NULL, `banner_image` varchar(255) NOT NULL, `is_active` enum('0','1') NOT NULL, `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `updated_at` timestamp NULL DEFAULT NULL, `deleted_at` timestamp NULL DEFAULT NULL ) ENGINE=InnoDB DEFAULT CHARSET=latin1
+
+
+ALTER TABLE `promotional_offer` ADD PRIMARY KEY (`id`)
+
+ ALTER TABLE `promotional_offer` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT
+
+RewriteEngine On
+RewriteCond %{HTTP_HOST} testin\.smartshiksha\.com [NC]
+RewriteCond %{SERVER_PORT} 80
+RewriteRule ^(.*)$ https://www.testin.smartshiksha.com/$1 [R,L]

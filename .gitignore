@@ -1,0 +1,8 @@
+Homestead.yaml
+Homestead.json
+.env
+uploads/*
+storage/*
+storage/framework/views/*
+storage/framework/sessions/*
+vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php

@@ -1,0 +1,22 @@
+{
+    "name": "stechstudio/laravel-raw-sessions",
+    "description": "A raw PHP session handler for Laravel",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Joseph Szobody",
+            "email": "joseph@stechstudio.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+        "classmap": [
+        ],
+        "psr-4": {
+            "STS\\Session\\": "src"
+        }
+    },
+    "minimum-stability": "stable"
+}
