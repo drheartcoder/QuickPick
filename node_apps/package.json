@@ -4,15 +4,15 @@
   "description": "Realtime vehicle tracking.",
   "main": "index.js",
   "dependencies": {
-    "async": "^2.6.0",
+    "async": "^2.6.4",
     "delivery": "0.0.6",
     "dotenv": "^4.0.0",
-    "express": "^4.16.2",
-    "lodash": "^4.17.4",
-    "moment": "^2.20.1",
+    "express": "^4.20.0",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
     "mysql": "^2.15.0",
     "path": "^0.12.7",
-    "socket.io": "^2.0.4"
+    "socket.io": "^2.5.1"
   },
   "devDependencies": {},
   "scripts": {
